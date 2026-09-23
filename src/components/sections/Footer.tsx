@@ -188,16 +188,16 @@ const Footer = forwardRef<
               <p className="flex max-w-full flex-wrap justify-center text-sm text-secondary-foreground theme-text-shadow break-words whitespace-normal">
                 {t("footer.poweredBy")}{" "}
                 <a
-                  href="https://github.com/komari-monitor/komari"
+                  href="https://github.com/huilang-me/CF-Server-Monitor/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="min-w-0 text-blue-500 hover:text-blue-600 transition-colors break-words">
-                  Komari Monitor
+                  CF-Server-Monitor
                 </a>
                 {" | "}
                 {t("footer.themeBy")}{" "}
                 <a
-                  href="https://github.com/YoungYannick/komari-theme-purcarte-plus"
+                  href="https://github.com/shali10/komari-theme-purcarte-plus"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="min-w-0 text-blue-500 hover:text-blue-600 transition-colors break-words">

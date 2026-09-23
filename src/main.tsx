@@ -1,7 +1,7 @@
 import { StrictMode, useEffect, useRef, useState, lazy, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import {
-  BrowserRouter as Router,
+  HashRouter as Router,
   Routes,
   Route,
   useLocation,
@@ -183,6 +183,34 @@ const AppRoutes = ({
             />
             <Route
               path="/instance/:uuid"
+              element={
+                <ScrollArea
+                  className="h-full"
+                  viewportRef={instanceViewportRef}>
+                  <div className="flex flex-col min-h-screen">
+                    <main
+                      className="w-(--main-width) max-w-screen-2xl h-full mx-auto flex-1"
+                      style={{
+                        paddingTop:
+                          selectedHeaderStyle === "levitation"
+                            ? headerHeight
+                            : 0,
+                        paddingBottom:
+                          selectedFooterStyle === "levitation"
+                            ? footerHeight
+                            : 0,
+                      }}>
+                      <InstancePage />
+                    </main>
+                    {selectedFooterStyle === "followContent" && (
+                      <Footer isSettingsOpen={isSettingsOpen} ref={null} />
+                    )}
+                  </div>
+                </ScrollArea>
+              }
+            />
+            <Route
+              path="/server/:uuid"
               element={
                 <ScrollArea
                   className="h-full"

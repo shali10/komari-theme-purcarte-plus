@@ -195,7 +195,7 @@ const AdminButton = ({ isMobile }: { isMobile?: boolean }) => {
     return (
       <DropdownMenuItem asChild>
         <a
-          href="/admin"
+          href="/admin#admin"
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center">
@@ -207,7 +207,7 @@ const AdminButton = ({ isMobile }: { isMobile?: boolean }) => {
   }
 
   return (
-    <a href="/admin" target="_blank" rel="noopener noreferrer">
+    <a href="/admin#admin" target="_blank" rel="noopener noreferrer">
       <Button variant="ghost" size="icon">
         <CircleUserIcon className="size-5 text-primary" />
       </Button>
