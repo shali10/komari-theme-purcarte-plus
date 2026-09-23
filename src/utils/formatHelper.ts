@@ -110,7 +110,7 @@ export const formatPrice = (
 
 export const formatTrafficLimit = (
   limit?: number,
-  type?: "sum" | "max" | "min" | "up" | "down",
+  type?: "sum" | "max" | "min" | "up" | "down" | string,
   t?: TranslateFn
 ) => {
   if (!limit) return tr(t, "format.trafficLimitUnset", "未设置");
@@ -122,15 +122,16 @@ export const formatTrafficLimit = (
   const typeKey = type || "max";
   const typeFallback =
     {
+      total: "总和",
       sum: "总和",
       max: "最大值",
       min: "最小值",
       up: "上传",
       down: "下载",
-    }[typeKey] || "";
+    }[typeKey] || "总和";
   const typeText = tr(
     t,
-    `format.trafficLimitType.${typeKey}`,
+    `format.trafficLimitType.${typeKey === "total" ? "sum" : typeKey}`,
     typeFallback
   );
 

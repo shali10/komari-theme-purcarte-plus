@@ -23,16 +23,59 @@ let rawServersCache: any[] = [];
 const serverMapCache: Map<string, any> = new Map();
 const currentStatusMap: RpcNodeStatusMap = {};
 
+function parseBillingCycleDays(cycle: any): number {
+  if (cycle === null || cycle === undefined || cycle === "") return 30;
+  const str = String(cycle).trim().toLowerCase();
+  if (str === "once" || str === "one_time" || str === "-1") return -1;
+  if (str === "month" || str === "monthly") return 30;
+  if (str === "quarter" || str === "quarterly") return 92;
+  if (str === "half_year" || str === "halfyear" || str === "half-yearly") return 184;
+  if (str === "year" || str === "yearly" || str === "annual") return 365;
+  if (str === "two_years" || str === "2years") return 730;
+  if (str === "three_years" || str === "3years") return 1095;
+  if (str === "five_years" || str === "5years") return 1825;
+
+  const num = Number(str);
+  if (!isNaN(num)) {
+    if (num === -1) return -1;
+    if (num === 1) return 30;
+    if (num === 3) return 92;
+    if (num === 6) return 184;
+    if (num === 12) return 365;
+    if (num === 24) return 730;
+    if (num === 36) return 1095;
+    if (num > 0 && num <= 12) return num * 30;
+    if (num > 12) return num;
+  }
+  return 30;
+}
+
+function parseTrafficLimitType(type: any): "sum" | "max" | "min" | "up" | "down" {
+  const str = String(type || "").trim().toLowerCase();
+  if (str === "in" || str === "down" || str === "dl") return "down";
+  if (str === "out" || str === "up" || str === "ul") return "up";
+  if (str === "max") return "max";
+  if (str === "min") return "min";
+  return "sum"; // CFSM "total" -> Komari "sum"
+}
+
+function parsePrice(p: any): number {
+  if (p === null || p === undefined) return 0;
+  const str = String(p).trim();
+  if (!str) return 0;
+  const num = parseFloat(str);
+  if (isNaN(num)) return 0;
+  if (num === -1 || num === 0) return -1; // 免费/白嫖标记
+  return num;
+}
+
 function convertServerToNodeData(s: any): NodeData {
   const ramBytes = (Number(s.ram_total) || 0) * 1024 * 1024;
   const swapBytes = (Number(s.swap_total) || 0) * 1024 * 1024;
   const diskBytes = (Number(s.disk_total) || 0) * 1024 * 1024;
 
-  let billingCycleMonths = 1;
-  if (s.billing_cycle === "year") billingCycleMonths = 12;
-  else if (s.billing_cycle === "quarter") billingCycleMonths = 3;
-  else if (s.billing_cycle === "half_year") billingCycleMonths = 6;
-  else if (!isNaN(Number(s.billing_cycle))) billingCycleMonths = Number(s.billing_cycle) || 1;
+  const billingCycleDays = parseBillingCycleDays(s.billing_cycle);
+  const priceVal = parsePrice(s.price);
 
   let trafficLimitBytes: number | undefined = undefined;
   const limitNum = parseFloat(s.traffic_limit);
@@ -55,8 +98,8 @@ function convertServerToNodeData(s: any): NodeData {
     swap_total: swapBytes,
     disk_total: diskBytes,
     weight: Number(s.sort_order) || 0,
-    price: parseFloat(s.price) || 0,
-    billing_cycle: billingCycleMonths,
+    price: priceVal,
+    billing_cycle: billingCycleDays,
     currency: s.currency || "¥",
     expired_at: s.expire_date || null,
     auto_renewal: s.auto_renewal === "1" || s.auto_renewal === true,
@@ -65,7 +108,7 @@ function convertServerToNodeData(s: any): NodeData {
     public_remark: s.note || "",
     hidden: s.is_hidden === "1" || s.is_hidden === true,
     traffic_limit: trafficLimitBytes,
-    traffic_limit_type: s.traffic_calc_type || "sum",
+    traffic_limit_type: parseTrafficLimitType(s.traffic_calc_type),
     created_at: s.boot_time ? new Date(Number(s.boot_time)).toISOString() : new Date().toISOString(),
     updated_at: s.last_updated ? new Date(Number(s.last_updated)).toISOString() : new Date().toISOString(),
   };
@@ -93,6 +136,15 @@ function convertServerToRpcNodeStatus(s: any): RpcNodeStatus {
   const diskUsedBytes = (Number(s.disk_used) || 0) * 1024 * 1024;
   const diskTotalBytes = (Number(s.disk_total) || 0) * 1024 * 1024;
 
+  const upMonthly = Number(s.net_tx_monthly);
+  const downMonthly = Number(s.net_rx_monthly);
+  const hasMonthly = (!isNaN(upMonthly) && upMonthly > 0) ||
+                     (!isNaN(downMonthly) && downMonthly > 0) ||
+                     Boolean(s.traffic_limit && Number(s.traffic_limit) > 0);
+
+  const netTotalUp = hasMonthly ? (Number(s.net_tx_monthly) || 0) : (Number(s.net_tx) || 0);
+  const netTotalDown = hasMonthly ? (Number(s.net_rx_monthly) || 0) : (Number(s.net_rx) || 0);
+
   return {
     client: s.id,
     time: new Date(lastUpdated || now).toISOString(),
@@ -110,8 +162,8 @@ function convertServerToRpcNodeStatus(s: any): RpcNodeStatus {
     disk_total: diskTotalBytes,
     net_in: Number(s.net_in_speed) || 0,
     net_out: Number(s.net_out_speed) || 0,
-    net_total_up: Number(s.net_tx) || 0,
-    net_total_down: Number(s.net_rx) || 0,
+    net_total_up: netTotalUp,
+    net_total_down: netTotalDown,
     process: Number(s.processes) || 0,
     connections: Number(s.tcp_conn) || 0,
     connections_udp: Number(s.udp_conn) || 0,
@@ -517,8 +569,16 @@ export class WebSocketService {
                 if (m.disk_total !== undefined) status.disk_total = (Number(m.disk_total) || 0) * 1024 * 1024;
                 if (m.net_in_speed !== undefined) status.net_in = Number(m.net_in_speed) || 0;
                 if (m.net_out_speed !== undefined) status.net_out = Number(m.net_out_speed) || 0;
-                if (m.net_rx !== undefined) status.net_total_down = Number(m.net_rx) || 0;
-                if (m.net_tx !== undefined) status.net_total_up = Number(m.net_tx) || 0;
+                if (m.net_tx_monthly !== undefined && m.net_tx_monthly !== null) {
+                  status.net_total_up = Number(m.net_tx_monthly) || 0;
+                } else if (m.net_tx !== undefined && !serverMapCache.get(sid)?.traffic_limit) {
+                  status.net_total_up = Number(m.net_tx) || 0;
+                }
+                if (m.net_rx_monthly !== undefined && m.net_rx_monthly !== null) {
+                  status.net_total_down = Number(m.net_rx_monthly) || 0;
+                } else if (m.net_rx !== undefined && !serverMapCache.get(sid)?.traffic_limit) {
+                  status.net_total_down = Number(m.net_rx) || 0;
+                }
                 if (m.uptime !== undefined) status.uptime = Number(m.uptime) || 0;
                 if (m.processes !== undefined) status.process = Number(m.processes) || 0;
                 if (m.tcp_conn !== undefined) status.connections = Number(m.tcp_conn) || 0;
