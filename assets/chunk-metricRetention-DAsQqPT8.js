@@ -1,0 +1,6 @@
+import{c}from"./entry-index-CbHgFQ6A.js";/**
+ * @license lucide-react v0.537.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */const u=[["path",{d:"M8 2v4",key:"1cmpym"}],["path",{d:"M16 2v4",key:"4m81vk"}],["rect",{width:"18",height:"18",x:"3",y:"4",rx:"2",key:"1hopcy"}],["path",{d:"M3 10h18",key:"8toen8"}],["path",{d:"M8 14h.01",key:"6423bh"}],["path",{d:"M12 14h.01",key:"1etili"}],["path",{d:"M16 14h.01",key:"1gbofw"}],["path",{d:"M8 18h.01",key:"lrp35t"}],["path",{d:"M12 18h.01",key:"mhygvu"}],["path",{d:"M16 18h.01",key:"kzsmim"}]],y=c("calendar-days",u),a=e=>{const t=Number(e);return Number.isFinite(t)&&t>=0?t:null};function l(e,t,o=24){const r=a(t==="load"?e?.load_metric_retention_days:e?.ping_metric_retention_days);if(r!==null)return r*24;const n=a(e?.metric_retention_days);return n!==null?n*24:a(t==="load"?e?.record_preserve_time:e?.ping_record_preserve_time)??o}function m(e,t){return t?e:Math.min(e,24)}function h(e,t=!1){const o=a(e)??0,r=t?[0]:[];for(const n of[1,4,24])n<=o&&r.push(n);if(o>24){const n=Math.ceil(o/48)*24,s=Math.min(n,336);s>24&&s<o&&r.push(s),r.includes(o)||r.push(o)}return r}function p(e){const t=a(e)??0,o=Math.floor(t/24)*24;return h(o).filter(r=>r>=24&&r%24===0).map(r=>r/24)}export{y as C,p as a,h as b,m as l,l as r};
