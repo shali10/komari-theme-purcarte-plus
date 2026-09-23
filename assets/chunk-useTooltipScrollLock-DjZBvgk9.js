@@ -1,4 +1,4 @@
-import{r,j as l,a9 as i,c as n}from"./entry-index-BjUdsL6P.js";var d="Label",u=r.forwardRef((o,c)=>l.jsx(i.label,{...o,ref:c,onMouseDown:t=>{t.target.closest("button, input, select, textarea")||(o.onMouseDown?.(t),!t.defaultPrevented&&t.detail>1&&t.preventDefault())}}));u.displayName=d;/**
+import{r,j as l,a9 as i,c as n}from"./entry-index-B_kIptdC.js";var d="Label",u=r.forwardRef((o,c)=>l.jsx(i.label,{...o,ref:c,onMouseDown:t=>{t.target.closest("button, input, select, textarea")||(o.onMouseDown?.(t),!t.defaultPrevented&&t.detail>1&&t.preventDefault())}}));u.displayName=d;/**
  * @license lucide-react v0.537.0 - ISC
  *
  * This source code is licensed under the ISC license.
