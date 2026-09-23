@@ -167,7 +167,7 @@ export const DEFAULT_CONFIG: ConfigOptions = {
   compactUptimeDisplay: "hideUnset",
   // 底栏设置
   selectedFooterStyle: "followContent",
-  hideFooterOriginal: false,
+  hideFooterOriginal: true,
   enableServerUptime: true,
   serverStartTime: "2026,5,22,20,30,5",
   serverUptimeTemplate: "已稳定守护 {days} 天 {hours} 小时 {minutes} 分钟 {seconds} 秒",
