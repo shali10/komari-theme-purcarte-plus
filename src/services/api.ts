@@ -145,6 +145,10 @@ function convertServerToRpcNodeStatus(s: any): RpcNodeStatus {
   const netTotalUp = hasMonthly ? (Number(s.net_tx_monthly) || 0) : (Number(s.net_tx) || 0);
   const netTotalDown = hasMonthly ? (Number(s.net_rx_monthly) || 0) : (Number(s.net_rx) || 0);
 
+  const bootTime = Number(s.boot_time || 0);
+  const nowMs = Date.now();
+  const calculatedUptime = bootTime > 0 ? Math.max(0, Math.floor((nowMs - bootTime) / 1000)) : (Number(s.uptime) || 0);
+
   return {
     client: s.id,
     time: new Date(lastUpdated || now).toISOString(),
@@ -168,7 +172,7 @@ function convertServerToRpcNodeStatus(s: any): RpcNodeStatus {
     connections: Number(s.tcp_conn) || 0,
     connections_udp: Number(s.udp_conn) || 0,
     online: isOnline,
-    uptime: Number(s.uptime) || 0,
+    uptime: calculatedUptime,
   };
 }
 
@@ -579,7 +583,12 @@ export class WebSocketService {
                 } else if (m.net_rx !== undefined && !serverMapCache.get(sid)?.traffic_limit) {
                   status.net_total_down = Number(m.net_rx) || 0;
                 }
-                if (m.uptime !== undefined) status.uptime = Number(m.uptime) || 0;
+                if (m.uptime !== undefined) {
+                  status.uptime = Number(m.uptime) || 0;
+                } else if (m.boot_time !== undefined) {
+                  const bt = Number(m.boot_time) || 0;
+                  if (bt > 0) status.uptime = Math.max(0, Math.floor((Date.now() - bt) / 1000));
+                }
                 if (m.processes !== undefined) status.process = Number(m.processes) || 0;
                 if (m.tcp_conn !== undefined) status.connections = Number(m.tcp_conn) || 0;
                 if (m.udp_conn !== undefined) status.connections_udp = Number(m.udp_conn) || 0;

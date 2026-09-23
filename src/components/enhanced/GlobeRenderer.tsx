@@ -137,7 +137,7 @@ export default function GlobeRenderer({
       .backgroundImageUrl(bgConfig.bgImage)
       .globeImageUrl(bgConfig.globeImage)
       .bumpImageUrl(
-        "//upload.wikimedia.org/wikipedia/commons/b/b3/Solarsystemscope_texture_8k_earth_nightmap.jpg"
+        "https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-night.jpg"
       )
       .atmosphereColor(bgConfig.atmosphere)
       .atmosphereAltitude(0.15)

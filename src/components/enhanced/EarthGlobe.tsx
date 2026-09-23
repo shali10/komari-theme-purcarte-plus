@@ -137,10 +137,12 @@ export function EarthGlobe() {
     if (isDark) {
       return {
         bg,
-        bgImage: earthDarkBgImage || null,
+        bgImage:
+          earthDarkBgImage ||
+          "https://cdn.jsdelivr.net/npm/three-globe/example/img/night-sky.png",
         globeImage:
           earthDarkGlobeImage ||
-          "//upload.wikimedia.org/wikipedia/commons/b/b3/Solarsystemscope_texture_8k_earth_nightmap.jpg",
+          "https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-night.jpg",
         atmosphere: themeColor,
       };
     }
@@ -149,7 +151,7 @@ export function EarthGlobe() {
       bgImage: earthLightBgImage || null,
       globeImage:
         earthLightGlobeImage ||
-        "//upload.wikimedia.org/wikipedia/commons/0/04/Solarsystemscope_texture_8k_earth_daymap.jpg",
+        "https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-day.jpg",
       atmosphere: "#3b82f6",
     };
   }, [
