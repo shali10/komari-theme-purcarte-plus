@@ -119,7 +119,7 @@ export const DEFAULT_CONFIG: ConfigOptions = {
   videoBackgroundUrlMobile: "",
   backgroundAlignment: "cover,top",
   enableBlur: true,
-  blurValue: 5,
+  blurValue: 3,
   blurBackgroundColor: "rgba(255, 255, 255, 0.5)|rgba(0, 0, 0, 0.5)",
   enableTransparentTags: true,
   tagDefaultColorList:
@@ -142,14 +142,14 @@ export const DEFAULT_CONFIG: ConfigOptions = {
   enableThemeColorSwitcher: true,
   enableLanguageSwitcher: true,
   // 内容设置
-  enableJsonRPC2Api: true,
+  enableJsonRPC2Api: false,
   enableStatsBar: true,
   enableSortControl: true,
   statusCardsVisibility:
       "currentTime:true,currentOnline:true,regionOverview:true,trafficOverview:true,networkSpeed:true,assetValue:true,monthlyExpense:true",
   isShowStatsInHeader: false,
   enableGroupedBar: true,
-  mergeGroupsWithStats: false,
+  mergeGroupsWithStats: true,
   defaultSelectedGroup: "",
   isOfflineNodesBehind: true,
   selectedDefaultView: "grid",
@@ -168,8 +168,8 @@ export const DEFAULT_CONFIG: ConfigOptions = {
   // 底栏设置
   selectedFooterStyle: "followContent",
   hideFooterOriginal: false,
-  enableServerUptime: false,
-  serverStartTime: "",
+  enableServerUptime: true,
+  serverStartTime: "2026,5,22,20,30,5",
   serverUptimeTemplate: "已稳定守护 {days} 天 {hours} 小时 {minutes} 分钟 {seconds} 秒",
   footerCustomContent: "",
   // Instance 设置
